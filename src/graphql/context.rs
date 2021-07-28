@@ -1,5 +1,8 @@
+use crate::auth;
+
 #[derive(Clone, PartialEq, Eq, Debug)]
 pub struct Context {
+    pub auth_manager: auth::Manager,
     pub user_name: Option<String>,
 }
 
@@ -12,13 +15,16 @@ fn parse_bearer_token(token: &str) -> Option<&str> {
 }
 
 impl Context {
-    pub fn new(bearer_token: Option<String>) -> Self {
+    pub fn new(auth_manager: auth::Manager, bearer_token: Option<String>) -> Self {
         let user_name: Option<String> = bearer_token
             .as_deref()
             .and_then(parse_bearer_token)
             .and_then(|token| Some("".to_owned()));
 
-        Context { user_name }
+        Context {
+            auth_manager,
+            user_name,
+        }
     }
 }
 

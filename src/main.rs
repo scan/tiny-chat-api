@@ -1,6 +1,8 @@
 mod filter;
 mod graphql;
 mod handler;
+mod auth;
+mod config;
 
 use std::env;
 use warp::Filter;
@@ -17,7 +19,9 @@ async fn main() {
 
     env_logger::init();
 
-    let api = filter::all();
+    let auth_manager = auth::Manager::new();
+
+    let api = filter::all(auth_manager);
 
     let routes = api
       .with(warp::log("tiny-chat"))
