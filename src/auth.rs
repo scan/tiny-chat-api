@@ -1,8 +1,9 @@
 use chrono::{prelude::*, Duration};
-use jsonwebtoken::{DecodingKey, EncodingKey, Header, Validation, decode, encode};
-use rand::{self, distributions::Alphanumeric, Rng};
+use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
-use std::{env, ops::Add};
+use std::ops::Add;
+
+use crate::config::Config;
 
 #[derive(Clone, Debug, Hash, Serialize, Deserialize)]
 struct Claims {
@@ -18,19 +19,10 @@ pub struct Manager {
 }
 
 impl Manager {
-    pub fn new() -> Self {
-        let secret: String = env::var("AUTH_SECRET_BASE").unwrap_or_else(|_| {
-            log::warn!(
-                "AUTH_SECRET_BASE not set, using a random string. This will break after a restart!"
-            );
-
-            rand::thread_rng()
-                .sample_iter(&Alphanumeric)
-                .take(16)
-                .collect::<String>()
-        });
-
-        Manager { secret }
+    pub fn new(cfg: &Config) -> Self {
+        Manager {
+            secret: cfg.secret_key_base.to_owned(),
+        }
     }
 
     pub fn token_for_user(&self, user: &str) -> anyhow::Result<String> {
@@ -58,5 +50,24 @@ impl Manager {
         )?;
 
         return Ok(token_contents.claims.sub);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_token_creation() {
+        let cfg = Config {
+            secret_key_base: "secret".to_owned(),
+        };
+        let manager = Manager::new(&cfg);
+
+        let user = "user".to_owned();
+        let token = manager.token_for_user(&user).unwrap();
+        let username = manager.username_from_token(&token).unwrap();
+
+        assert_eq!(user, username);
     }
 }

@@ -19,7 +19,8 @@ async fn main() {
 
     env_logger::init();
 
-    let auth_manager = auth::Manager::new();
+    let cfg = config::Config::from_env();
+    let auth_manager = auth::Manager::new(&cfg);
 
     let api = filter::all(auth_manager);
 
