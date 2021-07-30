@@ -14,7 +14,7 @@ async fn main() {
     };
 
     if env::var_os("RUST_LOG").is_none() {
-        env::set_var("RUST_LOG", "tiny-chat=info");
+        env::set_var("RUST_LOG", "tinychat=info");
     }
 
     env_logger::init();
@@ -25,7 +25,7 @@ async fn main() {
     let api = filter::all(auth_manager);
 
     let routes = api
-      .with(warp::log("tiny-chat"))
+      .with(warp::log("tinychat"))
       .with(
         warp::cors()
           .allow_any_origin()

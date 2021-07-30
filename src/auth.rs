@@ -28,7 +28,7 @@ impl Manager {
     pub fn token_for_user(&self, user: &str) -> anyhow::Result<String> {
         let claims = Claims {
             sub: user.to_owned(),
-            iss: "tiny-chat".to_owned(),
+            iss: "tinychat".to_owned(),
             iat: Utc::now().timestamp(),
             exp: Utc::now().add(Duration::days(360)).timestamp(),
         };
