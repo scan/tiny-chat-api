@@ -39,7 +39,7 @@ impl Manager {
             &EncodingKey::from_secret(self.secret.as_bytes()),
         )?;
 
-        return Ok(token);
+        Ok(token)
     }
 
     pub fn username_from_token(&self, token: &str) -> anyhow::Result<String> {
@@ -49,7 +49,7 @@ impl Manager {
             &Validation::default(),
         )?;
 
-        return Ok(token_contents.claims.sub);
+        Ok(token_contents.claims.sub)
     }
 }
 

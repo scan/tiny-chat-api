@@ -19,7 +19,7 @@ impl Context {
         let user_name: Option<String> = bearer_token
             .as_deref()
             .and_then(parse_bearer_token)
-            .and_then(|token| auth_manager.username_from_token(&token).ok());
+            .and_then(|token| auth_manager.username_from_token(token).ok());
 
         Context {
             auth_manager,
