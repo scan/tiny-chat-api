@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use rand::{self, distributions::Alphanumeric, Rng};
+use serde::{Deserialize, Serialize};
 use std::env;
 
 #[derive(Debug, Default, Eq, Serialize, Deserialize, PartialEq, Clone, Hash)]
@@ -21,7 +21,7 @@ impl Config {
         });
 
         Config {
-            secret_key_base: secret
+            secret_key_base: secret,
         }
     }
 }

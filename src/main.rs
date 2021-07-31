@@ -1,8 +1,8 @@
+mod auth;
+mod config;
 mod filter;
 mod graphql;
 mod handler;
-mod auth;
-mod config;
 
 use std::env;
 use warp::Filter;
@@ -25,23 +25,23 @@ async fn main() {
     let api = filter::all(auth_manager);
 
     let routes = api
-      .with(warp::log("tinychat"))
-      .with(
-        warp::cors()
-          .allow_any_origin()
-          .allow_methods(vec!["GET", "POST", "PUT", "DELETE", "OPTIONS"])
-          .allow_credentials(true)
-          .allow_headers(vec![
-            "Accept",
-            "Authorization",
-            "Content-Type",
-            "X-CSRF-Token",
-            "Accept-Language",
-          ])
-          .expose_header("Link")
-          .max_age(300),
-      )
-      .with(warp::compression::gzip());
-  
+        .with(warp::log("tinychat"))
+        .with(
+            warp::cors()
+                .allow_any_origin()
+                .allow_methods(vec!["GET", "POST", "PUT", "DELETE", "OPTIONS"])
+                .allow_credentials(true)
+                .allow_headers(vec![
+                    "Accept",
+                    "Authorization",
+                    "Content-Type",
+                    "X-CSRF-Token",
+                    "Accept-Language",
+                ])
+                .expose_header("Link")
+                .max_age(300),
+        )
+        .with(warp::compression::gzip());
+
     warp::serve(routes).run(([0, 0, 0, 0], 8080)).await;
 }
