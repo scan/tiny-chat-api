@@ -1,4 +1,4 @@
-use crate::auth;
+use crate::{auth, repository};
 use enclose::enclose;
 use futures::FutureExt as _;
 use std::{convert::Infallible, sync::Arc};
@@ -14,8 +14,9 @@ use juniper_warp::{make_graphql_filter, subscriptions::serve_graphql_ws};
 
 pub fn all(
     auth_manager: auth::Manager,
+    repo: repository::Repository,
 ) -> impl Filter<Extract = impl Reply, Error = Infallible> + Clone {
-    health().or(graphql(auth_manager)).or(not_found())
+    health().or(graphql(auth_manager, repo)).or(not_found())
 }
 
 fn not_found() -> impl Filter<Extract = impl Reply, Error = Infallible> + Clone {
@@ -30,10 +31,11 @@ fn health() -> impl Filter<Extract = impl Reply, Error = Rejection> + Clone {
 
 fn graphql(
     auth_manager: auth::Manager,
+    repo: repository::Repository,
 ) -> impl Filter<Extract = impl Reply, Error = Rejection> + Clone {
     let state = warp::any()
         .and(header::optional::<String>("authorization"))
-        .map(enclose!((auth_manager) move |bearer_token| Context::new(auth_manager.clone(), bearer_token)));
+        .map(enclose!((auth_manager, repo) move |bearer_token| Context::new(auth_manager.clone(), repo.clone(), bearer_token)));
 
     let root_node = Arc::new(schema());
     let graphql_filter = make_graphql_filter(schema(), state.boxed());
@@ -49,11 +51,11 @@ fn graphql(
         .map(
             enclose!((auth_manager) move |ws: warp::ws::Ws, bearer_token: Option<String>| {
                 ws.on_upgrade(
-                    enclose!((auth_manager, root_node, bearer_token) move |websocket| async move {
+                    enclose!((auth_manager, repo, root_node, bearer_token) move |websocket| async move {
                       serve_graphql_ws(
                         websocket,
                         root_node,
-                        ConnectionConfig::new(Context::new(auth_manager, bearer_token)),
+                        ConnectionConfig::new(Context::new(auth_manager, repo, bearer_token)),
                       )
                       .map(|r| {
                         if let Err(e) = r {

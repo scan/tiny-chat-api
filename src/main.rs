@@ -22,8 +22,9 @@ async fn main() {
 
     let cfg = config::Config::from_env();
     let auth_manager = auth::Manager::new(&cfg);
+    let repo = repository::Repository::new();
 
-    let api = filter::all(auth_manager);
+    let api = filter::all(auth_manager, repo);
 
     let routes = api
         .with(warp::log("tinychat"))

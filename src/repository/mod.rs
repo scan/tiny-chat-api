@@ -6,7 +6,7 @@ use std::{
 };
 
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
-struct Message {
+pub struct Message {
     id: uuid::Uuid,
     pub sender: String,
     pub message: String,
@@ -37,7 +37,7 @@ impl Ord for Message {
 }
 
 #[derive(Debug, Clone)]
-struct Repository(Arc<RwLock<Vec<Message>>>);
+pub struct Repository(Arc<RwLock<Vec<Message>>>);
 
 impl Repository {
     pub fn new() -> Self {

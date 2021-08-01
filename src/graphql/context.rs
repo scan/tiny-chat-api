@@ -1,8 +1,9 @@
-use crate::auth;
+use crate::{auth, repository};
 
-#[derive(Clone, PartialEq, Eq, Debug)]
+#[derive(Clone, Debug)]
 pub struct Context {
     pub auth_manager: auth::Manager,
+    pub repo: repository::Repository,
     pub user_name: Option<String>,
 }
 
@@ -15,7 +16,11 @@ fn parse_bearer_token(token: &str) -> Option<&str> {
 }
 
 impl Context {
-    pub fn new(auth_manager: auth::Manager, bearer_token: Option<String>) -> Self {
+    pub fn new(
+        auth_manager: auth::Manager,
+        repo: repository::Repository,
+        bearer_token: Option<String>,
+    ) -> Self {
         let user_name: Option<String> = bearer_token
             .as_deref()
             .and_then(parse_bearer_token)
@@ -23,6 +28,7 @@ impl Context {
 
         Context {
             auth_manager,
+            repo,
             user_name,
         }
     }
