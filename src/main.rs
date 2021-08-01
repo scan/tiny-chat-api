@@ -3,6 +3,7 @@ mod config;
 mod filter;
 mod graphql;
 mod handler;
+mod repository;
 
 use std::env;
 use warp::Filter;
