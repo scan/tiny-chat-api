@@ -61,3 +61,16 @@ impl Repository {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_insert_message() {
+        let mut repository = Repository::new();
+        let message = Message::new("sender", "message");
+        repository.insert_message(message);
+        assert_eq!(repository.get_messages(None).len(), 1);
+    }
+}
