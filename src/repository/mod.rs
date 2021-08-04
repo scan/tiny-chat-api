@@ -14,7 +14,7 @@ pub struct Message {
 }
 
 impl Message {
-    fn new(sender: &str, message: &str) -> Self {
+    pub fn new(sender: &str, message: &str) -> Self {
         Message {
             id: uuid::Uuid::new_v4(),
             sender: sender.to_owned(),
@@ -44,8 +44,17 @@ impl Repository {
         Repository(Arc::new(RwLock::new(vec![])))
     }
 
-    pub fn insert_message(&mut self, message: Message) {
-        self.0.write().unwrap().push(message);
+    pub fn insert_message(&self, message: Message) -> anyhow::Result<()> {
+        match self.0.write() {
+            Ok(mut vec) => {
+                vec.push(message);
+                Ok(())
+            }
+            Err(error) => Err(anyhow::Error::msg(format!(
+                "could not acquire write lock for message list: {:#?}",
+                error
+            ))),
+        }
     }
 
     pub fn get_messages(&self, after: Option<chrono::DateTime<chrono::Utc>>) -> Vec<Message> {
@@ -68,7 +77,7 @@ mod tests {
 
     #[test]
     fn test_insert_message() {
-        let mut repository = Repository::new();
+        let repository = Repository::new();
         let message = Message::new("sender", "message");
         repository.insert_message(message);
         assert_eq!(repository.get_messages(None).len(), 1);
