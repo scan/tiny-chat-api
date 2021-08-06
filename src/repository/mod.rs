@@ -87,6 +87,8 @@ impl Repository {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use enclose::enclose;
+    use std::thread;
 
     #[test]
     fn test_insert_message() {
@@ -95,5 +97,28 @@ mod tests {
         assert!(repository.insert_message(message).is_ok());
         assert!(repository.get_messages(None).is_ok());
         assert_eq!(repository.get_messages(None).unwrap().len(), 1);
+    }
+
+    #[test]
+    fn test_parallel_insert_message() {
+        let repository = Repository::new();
+
+        let handles: Vec<thread::JoinHandle<_>> = (0..10)
+            .map(|i| {
+                let repository = repository.clone();
+                thread::spawn(enclose!((repository) move || {
+                    let message = Message::new("sender", &format!("message {}", i));
+
+                    assert!(repository.insert_message(message).is_ok());
+                }))
+            })
+            .collect();
+
+        for handle in handles {
+            assert!(handle.join().is_ok());
+        }
+
+        assert!(repository.get_messages(None).is_ok());
+        assert_eq!(repository.get_messages(None).unwrap().len(), 10);
     }
 }
