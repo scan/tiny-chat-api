@@ -1,4 +1,4 @@
-use juniper::{graphql_object, FieldResult};
+use juniper::{graphql_object, FieldResult, FieldError};
 
 use crate::repository::Message;
 
@@ -17,6 +17,10 @@ impl Query {
     }
 
     fn messages(context: &Context) -> FieldResult<Vec<Message>> {
+        if context.user_name.is_none() {
+            return Err(FieldError::from("login required"));
+        }
+
         let messages = context.repo.get_messages(None)?;
 
         Ok(messages)
