@@ -1,11 +1,12 @@
 use chrono::prelude::*;
+use juniper::GraphQLObject;
 use serde::{Deserialize, Serialize};
 use std::{
     cmp::Ordering,
     sync::{Arc, RwLock},
 };
 
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Serialize, Deserialize, GraphQLObject)]
 pub struct Message {
     id: uuid::Uuid,
     pub sender: String,
@@ -57,16 +58,28 @@ impl Repository {
         }
     }
 
-    pub fn get_messages(&self, after: Option<chrono::DateTime<chrono::Utc>>) -> Vec<Message> {
-        let messages = self.0.read().unwrap().clone();
+    pub fn get_messages(
+        &self,
+        after: Option<chrono::DateTime<chrono::Utc>>,
+    ) -> anyhow::Result<Vec<Message>> {
+        match self.0.read() {
+            Ok(messages) => {
+                let new_messages: Vec<Message> = if let Some(timestamp) = after {
+                    messages
+                        .clone()
+                        .into_iter()
+                        .filter(|m| m.sent_at > timestamp)
+                        .collect()
+                } else {
+                    messages.clone()
+                };
 
-        if let Some(timestamp) = after {
-            messages
-                .into_iter()
-                .filter(|m| m.sent_at > timestamp)
-                .collect()
-        } else {
-            messages
+                Ok(new_messages)
+            }
+            Err(error) => Err(anyhow::Error::msg(format!(
+                "could not acquire read lock for message list: {:#?}",
+                error
+            ))),
         }
     }
 }
@@ -79,7 +92,8 @@ mod tests {
     fn test_insert_message() {
         let repository = Repository::new();
         let message = Message::new("sender", "message");
-        repository.insert_message(message);
-        assert_eq!(repository.get_messages(None).len(), 1);
+        assert!(repository.insert_message(message).is_ok());
+        assert!(repository.get_messages(None).is_ok());
+        assert_eq!(repository.get_messages(None).unwrap().len(), 1);
     }
 }

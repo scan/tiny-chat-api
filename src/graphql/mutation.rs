@@ -18,7 +18,9 @@ impl Mutation {
 
     fn send_message(context: &Context, message: String) -> FieldResult<bool> {
         if let Some(username) = &context.user_name {
-            context.repo.insert_message(Message::new(&username, &message))?;
+            context
+                .repo
+                .insert_message(Message::new(&username, &message))?;
 
             Ok(true)
         } else {

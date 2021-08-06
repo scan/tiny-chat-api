@@ -1,4 +1,6 @@
-use juniper::graphql_object;
+use juniper::{graphql_object, FieldResult};
+
+use crate::repository::Message;
 
 use super::context::Context;
 
@@ -12,5 +14,11 @@ pub struct Query;
 impl Query {
     fn api_version() -> &str {
         VERSION.unwrap_or("unknown")
+    }
+
+    fn messages(context: &Context) -> FieldResult<Vec<Message>> {
+        let messages = context.repo.get_messages(None)?;
+
+        Ok(messages)
     }
 }
