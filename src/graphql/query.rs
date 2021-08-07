@@ -1,4 +1,5 @@
-use juniper::{graphql_object, FieldResult, FieldError};
+use chrono::{DateTime, Utc};
+use juniper::{graphql_object, FieldError, FieldResult};
 
 use crate::repository::Message;
 
@@ -16,12 +17,12 @@ impl Query {
         VERSION.unwrap_or("unknown")
     }
 
-    fn messages(context: &Context) -> FieldResult<Vec<Message>> {
+    fn messages(context: &Context, after: Option<DateTime<Utc>>) -> FieldResult<Vec<Message>> {
         if context.user_name.is_none() {
             return Err(FieldError::from("login required"));
         }
 
-        let messages = context.repo.get_messages(None)?;
+        let messages = context.repo.get_messages(after)?;
 
         Ok(messages)
     }

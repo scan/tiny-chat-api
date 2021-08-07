@@ -38,15 +38,21 @@ impl Ord for Message {
 }
 
 #[derive(Debug, Clone)]
-pub struct Repository(Arc<RwLock<Vec<Message>>>);
+pub struct Repository {
+    messages: Arc<RwLock<Vec<Message>>>,
+    transmitters: Arc<RwLock<Vec<crossbeam_channel::Sender<Message>>>>,
+}
 
 impl Repository {
     pub fn new() -> Self {
-        Repository(Arc::new(RwLock::new(vec![])))
+        Repository {
+            messages: Arc::new(RwLock::new(vec![])),
+            transmitters: Arc::new(RwLock::new(vec![])),
+        }
     }
 
     pub fn insert_message(&self, message: Message) -> anyhow::Result<()> {
-        match self.0.write() {
+        match self.messages.write() {
             Ok(mut vec) => {
                 vec.push(message);
                 Ok(())
@@ -62,13 +68,13 @@ impl Repository {
         &self,
         after: Option<chrono::DateTime<chrono::Utc>>,
     ) -> anyhow::Result<Vec<Message>> {
-        match self.0.read() {
+        match self.messages.read() {
             Ok(messages) => {
                 let new_messages: Vec<Message> = if let Some(timestamp) = after {
                     messages
                         .clone()
                         .into_iter()
-                        .filter(|m| m.sent_at > timestamp)
+                        .filter(|m| m.sent_at >= timestamp)
                         .collect()
                 } else {
                     messages.clone()
@@ -78,6 +84,21 @@ impl Repository {
             }
             Err(error) => Err(anyhow::Error::msg(format!(
                 "could not acquire read lock for message list: {:#?}",
+                error
+            ))),
+        }
+    }
+
+    pub fn register_listener(&self) -> anyhow::Result<crossbeam_channel::Receiver<Message>> {
+        let (tx, rx) = crossbeam_channel::unbounded();
+
+        match self.transmitters.write() {
+            Ok(mut vec) => {
+                vec.push(tx);
+                Ok(rx)
+            }
+            Err(error) => Err(anyhow::Error::msg(format!(
+                "could not acquire write lock for transmitter list: {:#?}",
                 error
             ))),
         }
