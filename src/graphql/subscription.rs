@@ -1,4 +1,4 @@
-use futures::Stream;
+use futures::{Stream, StreamExt};
 use juniper::{FieldError, graphql_subscription};
 use std::pin::Pin;
 
@@ -13,7 +13,12 @@ type MessageStream = Pin<Box<dyn Stream<Item = Result<Message, FieldError>> + Se
 impl Subscription {
     async fn get_messages(ctx: &Context) -> MessageStream {
         let receiver = ctx.repo.register_listener()?;
-        let stream = receiver;
+        let stream = async_stream::stream! {
+            loop {
+                receiver.next().await;
+
+            }
+        };
         Box::pin(stream)
     }
 }
