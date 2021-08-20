@@ -10,7 +10,7 @@ use crate::repository::Message;
 
 pub struct Subscription;
 
-// TODO: Move this into
+// TODO: Move this into a util module
 #[derive(Clone)]
 struct FutureReceiver<T> {
     receiver: crossbeam_channel::Receiver<T>,
