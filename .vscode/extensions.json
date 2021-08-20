@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "gruntfuggly.todo-tree",
+        "matklad.rust-analyzer",
+        "ms-azuretools.vscode-docker",
+        "editorconfig.editorconfig",
+        "mikestead.dotenv",
+        "tamasfe.even-better-toml"
+    ]
+}
