@@ -17,6 +17,7 @@ impl Config {
             rand::thread_rng()
                 .sample_iter(&Alphanumeric)
                 .take(16)
+                .map(|u| u as char)
                 .collect::<String>()
         });
 
