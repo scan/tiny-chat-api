@@ -59,7 +59,7 @@ fn graphql(
                       )
                       .map(|r| {
                         if let Err(e) = r {
-                          println!("Websocket error: {}", e);
+                          log::error!("Websocket error: {}", e);
                         }
                       })
                       .await

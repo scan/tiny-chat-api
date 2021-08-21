@@ -157,9 +157,9 @@ dependencies = [
 
 [[package]]
 name = "bson"
-version = "1.2.2"
+version = "1.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "38b6553abdb9d2d8f262f0b5bccf807321d5b7d1a12796bcede8e1f150e85f2e"
+checksum = "903a4f4c7aa97921f1703acac1fd524e9e082b3228edd34dde07758c0c92c672"
 dependencies = [
  "base64 0.13.0",
  "chrono",
@@ -730,9 +730,9 @@ dependencies = [
 [[package]]
 name = "juniper"
 version = "0.15.7"
-source = "git+https://github.com/graphql-rust/juniper?branch=master#39d1e434204399357470c17c1f2a1b0b58fa6432"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "637ffa8a8d8a05aed3331449e311f145864adcd82442d82e54d0522decb7cecf"
 dependencies = [
- "anyhow",
  "async-trait",
  "bson",
  "chrono",
@@ -743,7 +743,6 @@ dependencies = [
  "indexmap",
  "juniper_codegen",
  "serde",
- "serde_json",
  "smartstring",
  "static_assertions",
  "url",
@@ -753,7 +752,8 @@ dependencies = [
 [[package]]
 name = "juniper_codegen"
 version = "0.15.7"
-source = "git+https://github.com/graphql-rust/juniper?branch=master#39d1e434204399357470c17c1f2a1b0b58fa6432"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a040e09482a45e77dd2dafa0d9d2651d17faf0ac674da0c93eabc3075ee24997"
 dependencies = [
  "proc-macro-error",
  "proc-macro2",
@@ -764,7 +764,8 @@ dependencies = [
 [[package]]
 name = "juniper_graphql_ws"
 version = "0.3.0"
-source = "git+https://github.com/graphql-rust/juniper?branch=master#39d1e434204399357470c17c1f2a1b0b58fa6432"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ed5526c2f2a9c40f08841dc559971641fdd71c008a265745d18bb0c8b7e105b3"
 dependencies = [
  "juniper",
  "juniper_subscriptions",
@@ -775,7 +776,8 @@ dependencies = [
 [[package]]
 name = "juniper_subscriptions"
 version = "0.16.0"
-source = "git+https://github.com/graphql-rust/juniper?branch=master#39d1e434204399357470c17c1f2a1b0b58fa6432"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2983b26a1e12b691c17432aee3881d8bec4a94d6c64bc933c0eaf6d9e3429f13"
 dependencies = [
  "futures",
  "juniper",
@@ -784,7 +786,8 @@ dependencies = [
 [[package]]
 name = "juniper_warp"
 version = "0.7.0"
-source = "git+https://github.com/graphql-rust/juniper?branch=master#39d1e434204399357470c17c1f2a1b0b58fa6432"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5d167107f6634c92f90daae1a298133377373e935d455042f90efc480fae4a52"
 dependencies = [
  "anyhow",
  "futures",
@@ -1457,9 +1460,9 @@ checksum = "fe0f37c9e8f3c5a4a66ad655a93c74daac4ad00c441533bf5c6e7990bb42604e"
 
 [[package]]
 name = "smartstring"
-version = "0.2.8"
+version = "0.2.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "baaf55266b953d41d45fc7c4d3ff756490c5666a2af64f77aeb95d0ffadb91de"
+checksum = "31aa6a31c0c2b21327ce875f7e8952322acfcfd0c27569a6e18a647281352c9b"
 dependencies = [
  "static_assertions",
 ]
